@@ -13,23 +13,25 @@ public class Compare {
     public static void main(String[] args) throws IOException {
         // create a new file input stream with the input file specified
         // at the command line
-        String activeListing = "/Users/jzhang9/Downloads/active.txt";
-        String onSkuGrid = "/Users/jzhang9/Downloads/skuids.txt";
+        //Need to modify the path for different username here
+        String activeListing = "/Users/jianan/Downloads/active.txt";
+        String onSkuGrid = "/Users/jianan/Downloads/skuids.txt";
         // Win
         //  String onSkuGrid = "D:\\skuids.txt";
 
         HashSet<String> idsActiveListing = loadTxtFile(activeListing);
         HashSet<String> idsOnSku = loadTxtFile(onSkuGrid);
 
-        HashSet<String> activeButNotinSkugrid = (HashSet<String>) idsActiveListing.clone();
+        HashSet<String> idsActiveListingClone = (HashSet<String>) idsActiveListing.clone();
 
-        activeButNotinSkugrid.removeAll(idsOnSku);
+        idsActiveListingClone.removeAll(idsOnSku);
 
-        HashSet<String> notActive = (HashSet<String>) idsOnSku.clone();
-        notActive.removeAll(idsActiveListing);
+        HashSet<String> idsOnSkuClone = (HashSet<String>) idsOnSku.clone();
+        idsOnSkuClone.removeAll(idsActiveListing);
 
-        writeToFile("activebutnotinSkugrid.txt", activeButNotinSkugrid.toString());
-        writeToFile("notactive.txt",notActive.toString());
+        // In porject output directory
+        writeToFile("activebutnotinSkugrid.txt", idsActiveListingClone.toString());
+        writeToFile("notactive.txt",idsOnSkuClone.toString());
 
 
         System.out.println("Good");
