@@ -3,66 +3,84 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 
 public class Compare {
 
+    public static void main(String[] args) {
 
-    public static void main(String[] args) throws IOException {
-        // create a new file input stream with the input file specified
-        // at the command line
-        //Need to modify the path for different username here
-        String activeListing = "/Users/jianan/Downloads/active.txt";
-        String onSkuGrid = "/Users/jianan/Downloads/skuids.txt";
-        // Win
-        //  String onSkuGrid = "D:\\skuids.txt";
+//        String firstFile = "/Users/jzhang9/Downloads/TS";
+//        String secondFile = "/Users/jzhang9/Downloads/PG";
 
-        HashSet<String> idsActiveListing = loadTxtFile(activeListing);
-        HashSet<String> idsOnSku = loadTxtFile(onSkuGrid);
+        System.out.println("Pls enter the full path for the 1st file. Example on Linux: /Pathto/file; Win D:\\file");
 
-        HashSet<String> idsActiveListingClone = (HashSet<String>) idsActiveListing.clone();
+        Scanner input = new Scanner(System.in);
+        String firstFile = input.nextLine();
 
-        idsActiveListingClone.removeAll(idsOnSku);
+        System.out.println("Pls enter the full path for the 2nd file");
+        String secondFile = input.nextLine();
 
-        HashSet<String> idsOnSkuClone = (HashSet<String>) idsOnSku.clone();
-        idsOnSkuClone.removeAll(idsActiveListing);
+        String fileNameA;
+        String fileNameB;
+        String path;
 
-        // In porject output directory
-        writeToFile("activebutnotinSkugrid.txt", idsActiveListingClone.toString());
-        writeToFile("notactive.txt",idsOnSkuClone.toString());
+        HashSet<String> fistFile_Content = loadTxtFile(firstFile);
+        HashSet<String> secondFile_Content = loadTxtFile(secondFile);
 
+        HashSet<String> inFirstButNotSec = new HashSet<String>(fistFile_Content);
+        HashSet<String> inSecButNotFirst = new HashSet<String>(secondFile_Content);
 
-        System.out.println("Good");
+        inFirstButNotSec.removeAll(secondFile_Content);
+        inSecButNotFirst.removeAll(fistFile_Content);
 
+        if (firstFile.lastIndexOf('/') == -1) {
+            // For Windows machine
+            int index = firstFile.lastIndexOf('\\');
+            fileNameA = firstFile.substring(index + 1);
+            fileNameB = secondFile.substring(index + 1);
+            path = firstFile.substring(0, index + 1);
+
+        } else {
+            // Linux
+            int index = firstFile.lastIndexOf('/');
+            fileNameA = firstFile.substring(index + 1);
+            fileNameB = secondFile.substring(index + 1);
+            path = firstFile.substring(0, index + 1);
+        }
+        String resultFileNameA = "Items_in_" + fileNameA + "_but_NOT_in_" + fileNameB;
+        String resultFileNameB = "Items_in_" + fileNameB + "_but_NOT_in_" + fileNameA;
+
+        try {
+            writeToFile(path + resultFileNameA, inFirstButNotSec.toString());
+            writeToFile(path + resultFileNameB, inSecButNotFirst.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Result saved to " + resultFileNameA + " and " + resultFileNameB);
+        System.out.println(resultFileNameA + " has " + inFirstButNotSec.size() + " items");
+        System.out.println(resultFileNameB + " has " + inSecButNotFirst.size() + " items");
     }
 
 
-    public static HashSet<String> loadTxtFile(String filePath) {
+    private static HashSet<String> loadTxtFile(String filePath) {
 
-        String ids = "";
         HashSet<String> list = new HashSet<>();
 
         try {
             Stream<String> lines = Files.lines(Paths.get(filePath));
-            StringBuilder data = new StringBuilder();
-            //    lines.forEach(line -> data.append(line).append("\n"));
-            lines.forEach(line -> list.add(line));
+            lines.forEach(line -> list.add(line.trim().toLowerCase()));
             lines.close();
 
-        } catch (Exception e) {
-            System.out.println(e.getStackTrace());
-        }
-
-        if (ids != "") {
-            System.out.println("Txt File Loaded");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return list;
     }
 
-    public static void writeToFile(String fileName, String content) throws IOException {
-
+    private static void writeToFile(String fileName, String content) throws IOException {
         Files.write(Paths.get(fileName), content.getBytes(), StandardOpenOption.CREATE);
 
     }
