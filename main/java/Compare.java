@@ -11,8 +11,8 @@ public class Compare {
 
     public static void main(String[] args) {
 
-//        String firstFile = "/Users/jzhang9/Downloads/TS";
-//        String secondFile = "/Users/jzhang9/Downloads/PG";
+//        String firstFile = "/Users/xxx/Downloads/TS";
+//        String secondFile = "/Users/xxx/Downloads/PG";
 
         System.out.println("Pls enter the full path for the 1st file. Example on Linux: /Pathto/file; Win D:\\file");
 
@@ -52,9 +52,19 @@ public class Compare {
         String resultFileNameA = "Items_in_" + fileNameA + "_but_NOT_in_" + fileNameB;
         String resultFileNameB = "Items_in_" + fileNameB + "_but_NOT_in_" + fileNameA;
 
+        StringBuilder inFirstButNotSec_Result = new StringBuilder();
+        StringBuilder inSecButNotFirst_Result = new StringBuilder();
+
+        for (String s : inFirstButNotSec) {
+            inFirstButNotSec_Result.append(s).append("\n");
+        }
+        for (String s : inSecButNotFirst) {
+            inSecButNotFirst_Result.append(s).append("\n");
+        }
+
         try {
-            writeToFile(path + resultFileNameA, inFirstButNotSec.toString());
-            writeToFile(path + resultFileNameB, inSecButNotFirst.toString());
+            writeToFile(path + resultFileNameA, inFirstButNotSec_Result.toString());
+            writeToFile(path + resultFileNameB, inSecButNotFirst_Result.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
